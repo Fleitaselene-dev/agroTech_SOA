@@ -1,100 +1,105 @@
-import{ createContext,  useEffect, useState, type ReactNode } from "react";
-export type  IUser = {
-  _id?: string; 
-  name: string;
-  email: string;
-  role: "Ganadero" | "Agricultor" | "Mixto" | "admin";
-  token: string;
-}
+import {
+  createContext,
+  useEffect,
+  useState,
+  type ReactNode,
+  useContext,
+} from "react";
+
+import { authApi } from "../api/auth";
+import type { IUser } from "../types/auth";
 
 interface AuthContextType {
   user: IUser | null;
-  login: (token: string) => void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (data: {
+    name: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
   logout: () => void;
+  loading: boolean;
+  error: string | null;
   isAuthenticated: boolean;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth debe usarse dentro de un AuthProvider");
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const isAuthenticated = !!user;
 
-  const decodeToken = (token: string): IUser | null => {
+  useEffect(() => {
+    // para usar HttpOnly cookies depue
+  });
+
+  const login = async (email: string, password: string) => {
+    setLoading(true);
+    setError(null);
     try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map((c) => {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      const decoded = JSON.parse(jsonPayload);
+      // 1. Obtener token
+      const { token } = await authApi.login({ email, password });
 
-      const role = decoded.role || decoded.rol
-      // Verificar si el token ha expirado
-      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        return null;
-      }
-    
-      return {
-        _id: decoded.id || decoded._id,
-        name: decoded.name,
-        email: decoded.email || "",
-        role,
-        token: token,
-      };
-    } catch (error) {
-      console.error("Error decodificando token:", error);
-      return null;
+      // 2. Usar token para obtener datos completos del usuario
+      const userData = await authApi.getUser(token);
+
+      // 3. Guardar en memoria
+      setUser(userData);
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión");
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Función para verificar el token almacenado
-  useEffect (() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      const userData = decodeToken(storedToken);
-      if (userData) {
-        setUser(userData);
-        setIsAuthenticated(true);
-      } else {
-        // Si el token es inválido o ha expirado, limpiar el storage
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      }
-    }
-  }, []);
-
- 
-
-  // Función para logear usuario
-  const login = (token: string) => {
-    const userData = decodeToken(token);
-    if (userData) {
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
+  const register = async (data: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await authApi.register(data);
+      // Opcional: auto-login tras registro
+      // await login(data.email, data.password);
+    } catch (err: any) {
+      setError(err.message || "Error al registrar");
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = () => {
     setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    setError(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        register,
+        logout,
+        loading,
+        error,
+        isAuthenticated,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
-
-

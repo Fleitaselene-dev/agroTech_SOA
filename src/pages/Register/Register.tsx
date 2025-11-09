@@ -1,5 +1,4 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 
 const Register = () => {
   return (
@@ -7,14 +6,14 @@ const Register = () => {
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-4/12 px-4 ">
-            <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-2xl rounded-lg bg-white border-0">
+            <div className="relative flex flex-col min-w-0 wrap-break-word w-full mb-6 shadow-2xl rounded-lg bg-white border-0">
               <div className="rounded-t mb-0 px-6 py-6 ">
                 <div className="text-center mb-3">
                   <h3 className="text-[#507d2a] text-3xl font-bold ">
                     Bienvenido a AgroPec
                   </h3>
                 </div>
-                <hr className="mt-6 border-b-1 border-gray-200" />
+                <hr className="mt-6 border-b border-gray-200" />
               </div>
 
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
