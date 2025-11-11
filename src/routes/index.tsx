@@ -13,7 +13,9 @@ export const AppRouter = () =>{
             <Route path="/" component={Landing}/>
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
-            <Route path="/home" component={HomePage}/>
+           
+           
+            <Route path="/home"  component={HomePage}/>
             {/* <Route path="/gestion" component={Inventario}/>*/}
             <Route path="/Meteorologia" component={Weather}/> 
         </Switch>

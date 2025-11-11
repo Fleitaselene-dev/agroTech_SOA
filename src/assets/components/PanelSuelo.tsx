@@ -23,10 +23,10 @@ export function PanelSuelo({ suelo }: PanelSueloProps) {
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-[#507d2a]">
-            Parcela {suelo._id} - {suelo.superficie} ha
+            Parcela  - {suelo.superficie} 
           </h3>
           <span
-            className={`${getEstadoColor(suelo.estadoSuelo)} text-white text-xs font-medium px-3 py-1 rounded-full`}
+            className={`${getEstadoColor(suelo.estadoSuelo)} text-white text-xs font-medium px-2 py-1 rounded-full`}
           >
             {suelo.estadoSuelo}
           </span>

@@ -22,7 +22,7 @@ const CostosChart: React.FC = () => {
   const [metrics, setMetrics] = useState<MetricType[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3402/api/metricType")
+    fetch("http://localhost:4000/api/metricType")
       .then(res => res.json())
       .then((data: MetricType[]) => setMetrics(data))
       .catch(err => console.error(err));
