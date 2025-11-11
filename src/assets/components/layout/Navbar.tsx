@@ -9,7 +9,7 @@ export default function Navbar() {
   const { user } = useAuth();
   return (
     <nav className="fixed top-0 left-0 w-full bg-[#DAEEC2] shadow z-50">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div className="max-w-6xl mx-auto px-4 py-2 flex justify-between items-center">
         <div className="flex items-center justify-center">
           <img
             src="/public/AgroPec.png"

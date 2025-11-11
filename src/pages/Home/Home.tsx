@@ -1,16 +1,19 @@
 import React from "react";
 import { MapPin, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 import CostosChart from "../../assets/components/Charts/CostoChart";
 import ProduccionChart from "../../assets/components/Charts/Productionchart";
 import MapComponent from "../../assets/components/EstablecimentsMap";
 import GanadoList from "../../assets/components/GanadoList";
 import WeatherWidget from "../../assets/components/WeatherWiget";
+import Navbar from '../../assets/components/layout/Navbar';
+import Footer from "../../assets/components/layout/Footer";
 
 const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen pt-20 p-6">
-      <div className="max-w-7xl mx-auto">
+      <Navbar/>
+      <div className="max-w-7xl mt-12 mx-auto">
         <div className="mb-10 animate-fade-in">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-1 h-12 bg-linear-to-b from-[#507d2a] to-[#6b9d3a] rounded-full"></div>
@@ -53,7 +56,7 @@ const HomePage: React.FC = () => {
             <ProduccionChart />
             <div className="lg:col-span-2 flex justify-center mt-8">
               <Link
-                to="/dashboard/inventario"
+                to="/gestion"
                 className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#507d2a] text-white rounded-2xl transition-all duration-300 font-semibold text-lg shadow-md hover:shadow-lg hover:scale-105 group"
               >
                 Ir al Inventario
@@ -70,6 +73,7 @@ const HomePage: React.FC = () => {
           <WeatherWidget />
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };
