@@ -25,15 +25,16 @@ const Login = () => {
     try {
       await login(email, password);
       navigate("/home");
-    } catch {}
+    } catch {
+      console.log("Error en login");
+    }
   };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center"
       style={{
-        backgroundImage:
-          "url('https://i0.wp.com/www.fceco.uner.edu.ar/wp-content/uploads/2021/12/sector-agropecuario-en-Mexico.jpg?fit=1200%2C674&ssl=1')",
+        backgroundImage: "url('https://i0.wp.com/www.fceco.uner.edu.ar/wp-content/uploads/2021/12/sector-agropecuario-en-Mexico.jpg?fit=1200%2C674&ssl=1')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -44,9 +45,7 @@ const Login = () => {
             <div className="relative flex flex-col min-w-0 break-word w-full mb-6 shadow-2xl rounded-lg bg-white border-0">
               <div className="rounded-t mb-0 px-6 py-6">
                 <div className="text-center mb-3">
-                  <h3 className="text-[#507d2a] text-3xl font-bold">
-                    Bienvenido a AgroPec
-                  </h3>
+                  <h3 className="text-[#507d2a] text-3xl font-bold">Bienvenido a AgroPec</h3>
                 </div>
                 <hr className="mt-6 border-b border-gray-200" />
               </div>
@@ -56,18 +55,11 @@ const Login = () => {
                   <small>Inicia sesión con tus credenciales</small>
                 </div>
 
-                {error && (
-                  <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm text-center">
-                    {error}
-                  </div>
-                )}
+                {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm text-center">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                   <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-[#164a41] text-xs font-bold mb-2"
-                      htmlFor="email"
-                    >
+                    <label className="block uppercase text-[#164a41] text-xs font-bold mb-2" htmlFor="email">
                       Email
                     </label>
                     <input
@@ -82,10 +74,7 @@ const Login = () => {
                   </div>
 
                   <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-[#164a41] text-xs font-bold mb-2"
-                      htmlFor="password"
-                    >
+                    <label className="block uppercase text-[#164a41] text-xs font-bold mb-2" htmlFor="password">
                       Contraseña
                     </label>
                     <input
@@ -107,9 +96,7 @@ const Login = () => {
                         onChange={(e) => setShowPassword(e.target.checked)}
                         className="form-checkbox border-0 rounded text-[#507d2a] ml-1 w-5 h-5 ease-linear transition-all duration-150"
                       />
-                      <span className="ml-2 text-sm font-semibold text-[#164a41]">
-                        Mostrar contraseña
-                      </span>
+                      <span className="ml-2 text-sm font-semibold text-[#164a41]">Mostrar contraseña</span>
                     </label>
                   </div>
 
@@ -126,10 +113,7 @@ const Login = () => {
                   </div>
                 </form>
                 <div className="text-center mt-4">
-                  <Link
-                    to="/register"
-                    className="text-black hover:text-[#7ba257]"
-                  >
+                  <Link to="/register" className="text-black hover:text-[#7ba257]">
                     <small>¿Aún no tienes cuenta? Registrate</small>
                   </Link>
                 </div>

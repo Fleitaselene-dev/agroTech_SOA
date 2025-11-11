@@ -1,9 +1,9 @@
 import type { FC } from "react";
 import Dashboard from "../../assets/components/Charts/Dashboard";
-import ParcelaTableForm from "./TableForm";
-import GanadoTableForm from "./GanadoForm";
-import DataSpreadsheet from "./DataSpreadsheet";
-import CultivoTableForm from "./CultivoTableForm";
+import ParcelaTableForm from "../../assets/components/Forms/ParcelaTableForm";
+import GanadoTableForm from "../../assets/components/Forms/GanadoTableForm";
+import DataSpreadsheet from "../../assets/components/Charts/DataSpreadsheet";
+import CultivoTableForm from "../../assets/components/Forms/CultivoTableForm";
 
 const Inventario: FC = () => {
   const handleParcelaSuccess = () => alert("¡Parcela creada con éxito!");

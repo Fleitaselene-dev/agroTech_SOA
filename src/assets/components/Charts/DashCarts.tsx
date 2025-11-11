@@ -1,30 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 
 // Registrar componentes de Chart.js
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement);
 
 // Tipo de datos de la API
 export type MetricType = {
@@ -41,7 +20,7 @@ const DashboardCharts: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3402/api/metricType")
+    fetch("http://localhost:4000/api/metricType")
       .then((res) => res.json())
       .then((data: MetricType[]) => {
         setMetrics(data);
@@ -103,14 +82,7 @@ const DashboardCharts: React.FC = () => {
       {
         label: "Producción Total",
         data: metrics.map((item) => item.totalProduccionPorCultivo),
-        backgroundColor: [
-          "#507d2a",
-          "#7ba84f",
-          "#f59e0b",
-          "#3b82f6",
-          "#8b5cf6",
-          "#ec4899",
-        ],
+        backgroundColor: ["#507d2a", "#7ba84f", "#f59e0b", "#3b82f6", "#8b5cf6", "#ec4899"],
         borderWidth: 2,
         borderColor: "#fff",
       },
@@ -151,9 +123,7 @@ const DashboardCharts: React.FC = () => {
           <h1 className="text-4xl font-bold mb-2" style={{ color: primaryColor }}>
             Dashboard de Métricas
           </h1>
-          <p className="text-gray-600">
-            Análisis detallado de producción y rentabilidad por cultivo
-          </p>
+          <p className="text-gray-600">Análisis detallado de producción y rentabilidad por cultivo</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -215,18 +185,10 @@ const DashboardCharts: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cultivo
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Producción (Kg)
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ganancias
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Costos
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cultivo</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Producción (Kg)</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ganancias</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Costos</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -235,18 +197,11 @@ const DashboardCharts: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="font-medium text-gray-900">{item._id}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-gray-700">
-                      {item.totalProduccionPorCultivo.toLocaleString()}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap text-right font-medium"
-                      style={{ color: primaryColor }}
-                    >
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-gray-700">{item.totalProduccionPorCultivo.toLocaleString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium" style={{ color: primaryColor }}>
                       ${item.totalGanancias.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-red-600">
-                      ${item.totalCostos.toLocaleString()}
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-red-600">${item.totalCostos.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
