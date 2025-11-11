@@ -13,6 +13,8 @@ const Login = () => {
   // reditigir si ya está autenticado
   useEffect(() => {
     if (isAuthenticated) {
+      console.log(" está ? ");
+
       navigate("/home");
     }
   }, [isAuthenticated, navigate]);
