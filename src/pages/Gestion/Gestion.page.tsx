@@ -1,9 +1,10 @@
 import type { FC } from "react";
-import Dashboard from "../../assets/components/Charts/Dashboard";
+
 import ParcelaTableForm from "../../assets/components/Forms/ParcelaTableForm";
 import GanadoTableForm from "../../assets/components/Forms/GanadoTableForm";
 import DataSpreadsheet from "../../assets/components/Charts/DataSpreadsheet";
 import CultivoTableForm from "../../assets/components/Forms/CultivoTableForm";
+import Navbar from "../../assets/components/layout/Navbar";
 
 const Inventario: FC = () => {
   const handleParcelaSuccess = () => alert("¡Parcela creada con éxito!");
@@ -12,8 +13,10 @@ const Inventario: FC = () => {
 
   return (
     <div className="bg-[#f8f8f8] min-h-screen pt-20 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-5xl text-center font-bold">Gestión de Inventario</h1>
+      <Navbar/>
+      <main className="max-w-7xl mt-12 mx-auto">
+      <div className="flex items-center justify-between mb-6 ">
+        <h1 className="text-5xl text-center font-bold" style={{ color: "#507d2a" }}>Gestión de Inventario</h1>
       </div>
 
       <DataSpreadsheet />
@@ -31,9 +34,8 @@ const Inventario: FC = () => {
         </div>
       </div>
 
-      <div className="w-full p-4 rounded-3xl">
-        <Dashboard />
-      </div>
+ 
+      </main>
     </div>
   );
 };

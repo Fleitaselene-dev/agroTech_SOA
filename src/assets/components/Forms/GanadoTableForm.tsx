@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
+
 
 interface VacunacionData {
   nombre: string;
@@ -60,8 +60,7 @@ const GanadoTableForm = ({ onSuccess }: GanadoTableFormProps) => {
   });
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { token } = useAuth();
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
@@ -100,7 +99,7 @@ const GanadoTableForm = ({ onSuccess }: GanadoTableFormProps) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+           Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
         },
         body: JSON.stringify(formData),
       });

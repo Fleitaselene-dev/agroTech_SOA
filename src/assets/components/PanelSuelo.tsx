@@ -35,7 +35,7 @@ export function PanelSuelo({ suelo }: PanelSueloProps) {
         <div className="space-y-3">
           <div className="flex justify-between items-center py-2 border-b border-gray-100">
             <span className="text-sm text-gray-600">Superficie</span>
-            <span className="font-medium text-gray-900">{suelo.superficie} ha</span>
+            <span className="font-medium text-gray-900">{suelo.superficie} </span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-gray-100">
             <span className="text-sm text-gray-600">pH del suelo</span>
@@ -47,10 +47,10 @@ export function PanelSuelo({ suelo }: PanelSueloProps) {
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <p className="text-xs text-gray-500">
-            📍 {suelo.coordenadas.latitud}, {suelo.coordenadas.longitud}
-          </p>
+        <div className="mt-4 pt-4 border-t border-gray-100">  
+           <p className="text-xs text-gray-500">
+  📍 {suelo.coordenadas?.latitud ?? "—"}, {suelo.coordenadas?.longitud ?? "—"}
+</p>
         </div>
       </div>
     </div>

@@ -1,81 +1,99 @@
-import { useState } from "react";
-import { Table as TableIcon, Download } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Table as TableIcon, Download, Loader2 } from "lucide-react";
+import { getAllCultivos } from "../../../api/cultivo";
+import { getAllGanado } from "../../../api/ganado";
+import { getAllParcelas } from "../../../api/parecela";
+
+// Tipos de datos
+type TabType = "parcelas" | "ganado" | "cultivos";
 
 interface SpreadsheetData {
-  id: string;
+  id?: string;
   tipo: string;
   nombre: string;
   fecha: string;
-  estado: "activo" | "inactivo" | "pendiente";
+  estado: string;
 }
 
 const DataSpreadsheet = () => {
-  const [activeTab, setActiveTab] = useState<"parcelas" | "ganado" | "cultivos">("parcelas");
+  const [activeTab, setActiveTab] = useState<TabType>("parcelas");
   const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData] = useState<Record<TabType, SpreadsheetData[]>>({
+    parcelas: [],
+    ganado: [],
+    cultivos: [],
+  });
+  const [loading, setLoading] = useState(false);
 
-  // Datos de ejemplo
-  const mockData: Record<string, SpreadsheetData[]> = {
-    parcelas: [
-      {
-        id: "P001",
-        tipo: "Parcela",
-        nombre: "Parcela A",
-        fecha: "2024-01-15",
-        estado: "activo",
-      },
-      {
-        id: "P002",
-        tipo: "Parcela",
-        nombre: "Parcela B",
-        fecha: "2024-02-20",
-        estado: "activo",
-      },
-      {
-        id: "P003",
-        tipo: "Parcela",
-        nombre: "Parcela C",
-        fecha: "2024-03-10",
-        estado: "pendiente",
-      },
-    ],
-    ganado: [
-      {
-        id: "G001",
-        tipo: "Bovino",
-        nombre: "Lote Vacunos 01",
-        fecha: "2024-01-20",
-        estado: "activo",
-      },
-      {
-        id: "G002",
-        tipo: "Ovino",
-        nombre: "Lote Ovejas 02",
-        fecha: "2024-02-15",
-        estado: "activo",
-      },
-    ],
-    cultivos: [
-      {
-        id: "C001",
-        tipo: "Cereal",
-        nombre: "Maíz Premium",
-        fecha: "2024-03-01",
-        estado: "activo",
-      },
-      {
-        id: "C002",
-        tipo: "Legumbre",
-        nombre: "Frijol Negro",
-        fecha: "2024-03-15",
-        estado: "pendiente",
-      },
-    ],
-  };
+  // 🧩 Función para obtener datos reales desde la API
+  
+const fetchData = async () => {
+  setLoading(true);
+  try {
+    const [parcelasResponse, ganadoResponse, cultivosResponse] = await Promise.all([
+      getAllParcelas(),
+      getAllGanado(),
+      getAllCultivos(),
+    ]);
 
-  const currentData = mockData[activeTab].filter((item) => item.nombre.toLowerCase().includes(searchTerm.toLowerCase()));
+    // Aseguramos que sean arrays válidos
+    const parcelas = Array.isArray(parcelasResponse)
+      ? parcelasResponse
+      : parcelasResponse?.parcelas || [];
+    const ganado = Array.isArray(ganadoResponse)
+      ? ganadoResponse
+      : ganadoResponse?.ganado || [];
+    const cultivos = Array.isArray(cultivosResponse)
+      ? cultivosResponse
+      : cultivosResponse?.cultivos || [];
+
+    console.log("📦 Datos recibidos:", { parcelas, ganado, cultivos });
+
+    const formattedData: Record<TabType, SpreadsheetData[]> = {
+      parcelas: parcelas.map((p: any, i: number) => ({
+        id: `P-${i + 1}`,
+        tipo: p.tipoSuelo || "Desconocido",
+        nombre: `Parcela ${i + 1}`,
+        fecha: new Date().toISOString().split("T")[0],
+        estado: "activo",
+      })),
+      ganado: ganado.map((g: any, i: number) => ({
+        id: `G-${i + 1}`,
+        tipo: g.raza || "Ganado",
+        nombre: g.marca_de_dueño || "Sin marca",
+        fecha: g.entrada_pastoreo
+          ? new Date(g.entrada_pastoreo).toISOString().split("T")[0]
+          : "—",
+        estado: "activo",
+      })),
+      cultivos: cultivos.map((c: any, i: number) => ({
+        id: `C-${i + 1}`,
+        tipo: c.tipo_cultivo || "Cultivo",
+        nombre: c.cultivo_asignado || "Sin nombre",
+        fecha: c.fecha_cultivo
+          ? new Date(c.fecha_cultivo).toISOString().split("T")[0]
+          : "—",
+        estado: c.estado_parcela || "pendiente",
+      })),
+    };
+
+    setData(formattedData);
+  } catch (error) {
+    console.error("❌ Error cargando datos:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  // 🧭 Filtrar datos por búsqueda
+  const currentData =
+    data[activeTab]?.filter((item) =>
+      item.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   const getEstadoColor = (estado: string) => {
-    switch (estado) {
+    switch (estado.toLowerCase()) {
       case "activo":
         return "bg-green-100 text-green-800";
       case "inactivo":
@@ -87,26 +105,17 @@ const DataSpreadsheet = () => {
     }
   };
 
-  const getEstadoLabel = (estado: string) => {
-    switch (estado) {
-      case "activo":
-        return "Activo";
-      case "inactivo":
-        return "Inactivo";
-      case "pendiente":
-        return "Pendiente";
-      default:
-        return estado;
-    }
-  };
-
   const handleExport = () => {
-    // Lógica para exportar datos a CSV
     const headers = ["ID", "Tipo", "Nombre", "Fecha", "Estado"];
-    const rows = currentData.map((item) => [item.id, item.tipo, item.nombre, item.fecha, getEstadoLabel(item.estado)]);
+    const rows = currentData.map((item) => [
+      item.id,
+      item.tipo,
+      item.nombre,
+      item.fecha,
+      item.estado,
+    ]);
 
-    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
-
+    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -126,9 +135,12 @@ const DataSpreadsheet = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-[#507d2a]">Base de Datos</h2>
-            <p className="text-gray-600 text-sm">Consulta todos tus registros</p>
+            <p className="text-gray-600 text-sm">
+              Consulta y exporta tus registros
+            </p>
           </div>
         </div>
+
         <button
           onClick={handleExport}
           className="flex items-center gap-2 bg-[#507d2a] hover:bg-[#3f5f21] text-white font-semibold py-2 px-4 rounded-xl transition-colors"
@@ -148,11 +160,15 @@ const DataSpreadsheet = () => {
               setSearchTerm("");
             }}
             className={`px-6 py-3 font-semibold rounded-t-lg transition-all ${
-              activeTab === tab ? "bg-[#507d2a] text-white" : "text-gray-600 hover:text-[#507d2a]"
+              activeTab === tab
+                ? "bg-[#507d2a] text-white"
+                : "text-gray-600 hover:text-[#507d2a]"
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            <span className="ml-2 text-sm">({mockData[tab].length})</span>
+            <span className="ml-2 text-sm">
+              ({data[tab]?.length ?? 0})
+            </span>
           </button>
         ))}
       </div>
@@ -168,49 +184,77 @@ const DataSpreadsheet = () => {
         />
       </div>
 
-      {/* Table */}
+      {/* Tabla */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[#f8f8f8] border-b-2 border-gray-200">
-              <th className="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700">Tipo</th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700">Nombre</th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700">Fecha</th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700">Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.length > 0 ? (
-              currentData.map((item, index) => (
-                <tr key={index} className="border-b border-gray-200 hover:bg-[#f8f8f8] transition-colors">
-                  <td className="px-4 py-3 font-semibold text-[#507d2a]">{item.id}</td>
-                  <td className="px-4 py-3 text-gray-700">{item.tipo}</td>
-                  <td className="px-4 py-3 text-gray-700">{item.nombre}</td>
-                  <td className="px-4 py-3 text-gray-700">{item.fecha}</td>
-                  <td className="px-4 py-3">
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getEstadoColor(item.estado)}`}>{getEstadoLabel(item.estado)}</span>
+        {loading ? (
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="animate-spin text-[#507d2a]" size={32} />
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="bg-[#f8f8f8] border-b-2 border-gray-200">
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">Tipo</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">Nombre</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">Fecha</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.length > 0 ? (
+                currentData.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-[#f8f8f8] transition-colors"
+                  >
+                    <td className="px-4 py-3 font-semibold text-[#507d2a]">
+                      {item.id}
+                    </td>
+                    <td className="px-4 py-3 text-gray-700">{item.tipo}</td>
+                    <td className="px-4 py-3 text-gray-700">{item.nombre}</td>
+                    <td className="px-4 py-3 text-gray-700">{item.fecha}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${getEstadoColor(
+                          item.estado
+                        )}`}
+                      >
+                        {item.estado}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-4 py-6 text-center text-gray-500"
+                  >
+                    No se encontraron registros
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
-                  No se encontraron registros
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* Footer Stats */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <p className="text-sm text-gray-600">
-          <span className="font-semibold text-[#507d2a]">{currentData.length}</span> de{" "}
-          <span className="font-semibold text-[#507d2a]">{mockData[activeTab].length}</span> registros mostrados
-        </p>
-      </div>
+      {/* Footer */}
+      {!loading && (
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-600">
+            <span className="font-semibold text-[#507d2a]">
+              {currentData.length}
+            </span>{" "}
+            de{" "}
+            <span className="font-semibold text-[#507d2a]">
+              {data[activeTab]?.length ?? 0}
+            </span>{" "}
+            registros mostrados
+          </p>
+        </div>
+      )}
     </div>
   );
 };

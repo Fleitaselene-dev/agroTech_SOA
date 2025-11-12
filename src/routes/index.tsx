@@ -3,9 +3,9 @@ import Landing from "../pages/Landing/Landing.page";
 import Login from "../pages/Login/Login.page";
 import Register from "../pages/Register/Register";
 import HomePage from "../pages/Home/Home";
-// import Inventario from '../pages/Gestion/Gestion.page';
 import Weather from "../pages/Meteorologia/Meterologia.page";
 import Inventario from "../pages/Gestion/Gestion.page";
+import Profile from "../pages/Profile/Profile.page";
 
 export const AppRouter = () => {
   return (
@@ -16,8 +16,8 @@ export const AppRouter = () => {
 
       <Route path={"/inventario"} component={Inventario} />
       <Route path="/home" component={HomePage} />
-      {/* <Route path="/gestion" component={Inventario}/>*/}
       <Route path="/Meteorologia" component={Weather} />
+      <Route path="/Perfil" component={Profile}/>
     </Switch>
   );
 };

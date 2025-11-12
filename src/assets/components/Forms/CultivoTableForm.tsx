@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
+
 
 interface CultivoFormData {
   tipo_cultivo: string;
@@ -34,7 +34,7 @@ const CultivoTableForm = ({ onSuccess }: CultivoTableFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showOptional, setShowOptional] = useState(false);
-  const { token } = useAuth();
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -52,7 +52,7 @@ const CultivoTableForm = ({ onSuccess }: CultivoTableFormProps) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+           Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
         },
         body: JSON.stringify(formData),
       });
